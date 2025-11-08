@@ -9,3 +9,9 @@ def tcp_test(port: int, target_ip: str) -> None:
         result = sock.connect_ex((target_ip, port))
         if result == 0:
             print(f"Opened Port: {port}")
+
+def worker(target_ip: str, queue: Queue) -> None:
+    while not queue.empty():
+        port = queue.get()
+        tcp_test(port, target_ip)
+        queue.task_done()
