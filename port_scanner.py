@@ -15,3 +15,15 @@ def worker(target_ip: str, queue: Queue) -> None:
         port = queue.get()
         tcp_test(port, target_ip)
         queue.task_done()
+
+def main(host: str, start_port: int, end_port: int) -> None:
+    target_ip = gethostbyname(host)
+    queue = Queue()
+    for port in range(start_port, end_port + 1):
+        queue.put(port)
+    for _ in range(100):  # Adjust the number of threads if necessary
+        t = threading.Thread(target=worker, args=(target_ip, queue,))
+        t.daemon = True
+        t.start()
+    queue.join()
+    print("Scanning completed.")
